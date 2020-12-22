@@ -57,12 +57,13 @@ app.get('/createbookstable', (req,res)=>{
 })
 
 // Insert book 1
-app.post('/addbook1', (req,res)=> {
-    let book = {title:'Book Two', body: "This is the book number two"};
+app.post('/addbook', (req,res)=> {
+    //let book = {title:'Book Two', body: "This is the book number two"};
+    let book = {title: req.title, body: req.body};
     let sql = "INSERT INTO books SET ?";
     let query = db.query(sql, book, (err,result) => {
         if(err) throw err;
-        console.log(JSON.stringify(result));
+        console.log(req);
         //res.send(result)
     });
 })
@@ -98,7 +99,7 @@ app.get('/getbookone/:id', (req,res)=> {
 
 // Update book 
 app.put('/updatebooks/books/:id', (req,res)=> {
-    console.log(req.params);
+    //console.log(req)
     //let sql = "UPDATE books SET title = ? WHERE id = ?";
     let sql = `UPDATE books SET ? WHERE id = ${req.params.id}`;
     //filter = [newTitle, req.params.id];
@@ -113,7 +114,7 @@ app.put('/updatebooks/books/:id', (req,res)=> {
         taken: req.body.taken
     }
     let query = db.query(sql, book1, (err,result) => {
-        if(err) throw err;
+        if(err) throw JSON.stringify(err);
         console.log("put request success!");
         
     });
