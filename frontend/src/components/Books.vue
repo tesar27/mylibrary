@@ -19,6 +19,7 @@
         v-bind:class="{'is-complete':book.completed}">
           {{book.title}}
           <i class="fas fa-trash" v-on:click="deleteBook(book.id)"></i>
+          <button>Test</button>
         </div>
       </div>
     </div>
