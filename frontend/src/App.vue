@@ -1,24 +1,22 @@
 <template>
-	<div id="app" >
-		<img alt="Vue logo" src="./assets/logo.png" />
-		<AddBook />
-		<FilterBooks />
-		<Books />
-    
+	<div id="app" class="w-screen h-screen m-0">
+		<Navigation />
+		<transition name="fade" mode="out-in">
+			<router-view :key="$route.path" />
+		</transition>
+		<Footer/>
 	</div>
 </template>
 
 <script>
-import AddBook from "./components/AddBook.vue";
-import FilterBooks from "./components/FilterBooks.vue";
-import Books from "./components/Books.vue";
+import Navigation from "./components/Navigation.vue";
+import Footer from "./components/Footer.vue";
 
 export default {
 	name: "App",
 	components: {
-		AddBook,
-		FilterBooks,
-		Books,
+		Navigation,
+		Footer
 	},
 };
 </script>
