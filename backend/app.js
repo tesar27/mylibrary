@@ -9,6 +9,8 @@ const bodyParser = require('body-parser');
 var flash = require('express-flash')
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
+var methodOverride = require('method-override')
+
 
 // Create  connection
 var db = mysql.createConnection({
@@ -27,6 +29,18 @@ db.connect((err) => {
 });
 
 var app = express();
+
+app.use(methodOverride(function (req, res) {
+    if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+        var method = req.body._method
+        delete req.body._method
+        return method
+    }
+}))
+
+var expressValidator = require('express-validator')
+app.use(expressValidator())
+
 const cors = require("cors");
 // Set security header
 app.use(helmet());
@@ -36,6 +50,9 @@ app.use(xss());
 app.use(hpp());
 app.use(cors());
 
+// create application/x-www-form-urlencoded parser
+app.use(bodyParser.urlencoded({ extended: true }))
+//app.use(bodyParser.json())
 // Create DB
 app.get('/createdb', (req,res)=> {
     let sql = "CREATE DATABASE nodemysql";
@@ -57,15 +74,26 @@ app.get('/createbookstable', (req,res)=>{
 })
 
 // Insert book 1
-app.post('/addbook', (req,res)=> {
+app.post('/addbook', (req,res, next)=> {
+    req.assert('title', 'Title is required').notEmpty()           //Validate name
+    req.assert('body', 'Body is required').notEmpty()             //Validate age
+    req.assert('taken', 'A valid taken is required').isEmail()  //Validate email
+    var errors = req.validationErrors()
+
     //let book = {title:'Book Two', body: "This is the book number two"};
-    let book = {title: req.title, body: req.body};
-    let sql = "INSERT INTO books SET ?";
-    let query = db.query(sql, book, (err,result) => {
-        if(err) throw err;
-        console.log(req);
-        //res.send(result)
-    });
+        console.log(req.body);
+        // var book = {
+        //     title: req.sanitize('title').escape().trim(),
+        //     body: req.sanitize('body').escape().trim(),
+        //     taken: req.sanitize('taken').escape().trim()
+        // }
+        
+        var book = {title: req.body.title, body: req.body.body, taken: req.body.taken}
+        let sql = "INSERT INTO books SET ?";
+        db.query(sql, book, (err,result) => {
+            if(err) throw err;
+            res.send(result)
+        });
 })
 
 app.get('/getbooks', (req,res) => {

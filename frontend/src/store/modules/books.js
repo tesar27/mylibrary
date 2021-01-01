@@ -1,4 +1,10 @@
 import axios from 'axios';
+const qs = require('querystring')
+const config = {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+}
 
 const state = {
     books: []
@@ -27,12 +33,19 @@ const actions = {
         const response = await axios.put(`http://localhost:3000/updatebooks/books/${updatedBook.id}`, updatedBook);
         console.log(response.data);
         commit('updateBook', response.data);
+    },
+
+    async addBook({commit}, newBook) {
+        const response = await axios.post(`http://localhost:3000/addbook`, qs.stringify(newBook), config);
+        console.log(response.data);
+        commit('addBook', response.data);
     }
 }
 
 const mutations = {
     setBooks: (state, books) => (state.books = books),
-    removeBook: (state, id) => state.books = state.books.filter((book) => book.id !== id)
+    removeBook: (state, id) => state.books = state.books.filter((book) => book.id !== id),
+    addBook: (state, book) => state.books.push(book)
 };
 
 export default {
